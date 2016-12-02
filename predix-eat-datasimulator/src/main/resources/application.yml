@@ -1,0 +1,155 @@
+spring:
+  profiles:
+    active: dev
+
+---
+spring:
+  profiles: dev
+
+uaa:
+  clientId: predix_client
+  clientSecret: IM_SO_SECRET
+  clientBase64Token: cHJlZGl4X2NsaWVudDpJTV9TT19TRUNSRVQ=
+  uri: https://d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
+
+backend:
+  uri: http://predix-wts-backend-api-dangndq.run.aws-usw02-pr.ice.predix.io
+
+gatewayAPI:
+  uri: http://localhost:9091
+
+timeseries:
+  instanceId: 190a25c9-86ec-42f2-933c-2ade774988fe
+  origin: https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints
+  ingestUri: wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages
+  updateTurbineInterval: 5000
+  generateDataInterval: 1000
+  httpReadTimeout: 2000
+  httpConnTimeout: 2000
+  webSocketMaxIdleTimeout: 2000
+  deltaValue: 12
+
+scheduler:
+  time: 1000
+
+asset:
+  instanceId: af0fdf4e-0d14-4927-9570-550098455026
+  uri: https://predix-asset.run.aws-usw02-pr.ice.predix.io
+
+predix:
+  oauth:
+    grantType: client_credentials
+    restHost: d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
+    clientId: predix_client:IM_SO_SECRET
+  timeseries:
+    maxIngestionMessageSize: 512000
+    maxTagsPerQuery: 10
+    ingestUri: wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages
+    baseUrl: https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io
+    zoneid: 2205a3b3-91c8-4eef-b828-5876553e4076
+    override:
+      oauthOverride: false
+      oauthClientId: predix_client:IM_SO_SECRET
+      oauthRestHost: d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
+    websocket:
+        connection:
+          retry: 1
+  websocket:
+    pool:
+      maxIdle: 5
+      maxActive: 5
+      maxWait: 8000
+      maxInstances: 5
+
+
+
+---
+spring:
+  profiles: unit-test
+
+uaa:
+  clientId: tsIngest-client
+  clientSecret: password
+  clientBase64Token: cHJlZGl4X3d0czpJTV9TT19TRUNSRVQ=
+  uri: http://localhost:8888
+
+backend:
+  uri: http://predix-wts-backend-api-dev.run.aws-usw02-pr.ice.predix.io/turbines/query
+
+gatewayAPI:
+  uri: http://predix-wts-gateway-dev.run.aws-usw02-pr.ice.predix.io/turbines/query
+
+timeseries:
+  instanceId: 9ffa9778-5b63-4f94-99f9-4db82e57231d
+  origin: http://localhost:8888
+  ingestUri: wss://localhost:8888/v1/stream/messages
+  updateTurbineInterval: 10000
+  generateDataInterval: 5000
+  httpReadTimeout: 2000
+  httpConnTimeout: 2000
+  webSocketMaxIdleTimeout: 2000
+  deltaValue: 12
+
+asset:
+  instanceId: 72ae1957-8727-4e52-89e7-040f25d8e2f7
+  uri: https://predix-asset.run.aws-usw02-pr.ice.predix.io
+
+---
+spring:
+  profiles: cloud
+
+uaa:
+  clientId: ${CLIENT_ID}
+  clientSecret: ${CLIENT_SECRET}
+  clientBase64Token: ${CLIENT_BASE64_TOKEN}
+  uri: ${UAA_URI}
+
+backend:
+  uri: ${BACKEND_URI}
+
+gatewayAPI:
+  uri: ${GATEWAY_URI}
+
+timeseries:
+  name: ${PREDIX_TIMESERIES_NAME}
+  ingestUri: ${TIMESERIES_INGEST_URI}
+  instanceId: ${TIMESETIES_INSTANCE_ID}
+  origin:  ${TIMESERIES_QUERY_URI}
+  updateTurbineInterval: 3000
+  generateDataInterval: 1000
+  httpReadTimeout: 2000
+  httpConnTimeout: 2000
+  webSocketMaxIdleTimeout: 2000
+  deltaValue: 20
+
+asset:
+  instanceId: ${ASSET_INSTANCE_ID}
+  uri: ${ASSET_URI}
+
+scheduler:
+  time: ${SCHEDULER_TIME}
+
+predix:
+  oauth:
+    grantType: client_credentials
+    restHost: ${REST_HOST}
+    clientId: ${CLIENT_ID}
+  timeseries:
+    maxIngestionMessageSize: 512000
+    maxTagsPerQuery: 10
+    ingestUri: ${TIMESERIES_INGEST_URI}
+    baseUrl: ${TIMESERIES_QUERY_URI}
+    zoneid: ${TIMESETIES_INSTANCE_ID}
+    override:
+      oauthOverride: false
+      oauthClientId: ${CLIENT_ID_SECRET}
+      oauthRestHost: ${REST_HOST}
+    websocket:
+        connection:
+          retry: 1
+  websocket:
+    pool:
+      maxIdle: 5
+      maxActive: 5
+      maxWait: 8000
+      maxInstances: 5

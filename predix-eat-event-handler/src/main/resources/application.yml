@@ -1,0 +1,30 @@
+---
+spring:
+  profiles: dev
+      
+backend:
+  uri: ${vcap.application.${application_uris:0}:}
+  
+---
+spring:
+  profiles: cloud
+
+  jpa: 
+    hibernate: 
+      ddl-auto: none
+      
+  datasource:
+    test-on-borrow: true
+      
+---
+spring:
+  profiles: integration
+  
+  jpa: 
+    hibernate: 
+      ddl-auto: update
+  
+backend:
+  uri: https://predix-bms-db-handler.run.aws-usw02-pr.ice.predix.io
+
+  

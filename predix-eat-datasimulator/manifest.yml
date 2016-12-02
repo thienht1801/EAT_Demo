@@ -1,0 +1,28 @@
+---
+applications:
+- name: predix-bms-datasimulator-dev1
+  buildpack: java_buildpack
+  memory: 1G
+  disk_quota: 1G
+  domain: run.aws-usw02-pr.ice.predix.io
+  path: target/predix-bms-temperature-datasimulator-0.0.1-SNAPSHOT.jar
+  env:
+    BACKEND_URI: https://predix-bms-db-handler-dev.run.aws-usw02-pr.ice.predix.io
+    GATEWAY_URI: https://predix-bms-gateway-dev1.run.aws-usw02-pr.ice.predix.io
+    TIMESERIES_INGEST_URI: wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages
+    TIMESETIES_INSTANCE_ID: a8a41aba-67a9-40a4-81e3-2d4787fe64df
+    TIMESERIES_QUERY_URI: https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io
+    PREDIX_TIMESERIES_NAME: predix_timeseries_bmsDev
+    SCHEDULER_TIME: 1800000
+    CLIENT_ID: predix_bms
+    IM_SO_SECRET: IM_SO_SECRET
+    CLIENT_ID_SECRET: cHJlZGl4X2JtczpJTV9TT19TRUNSRVQ=
+    CLIENT_BASE64_TOKEN: cHJlZGl4X2JtczpJTV9TT19TRUNSRVQ=
+    UAA_URI: https://d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
+    REST_HOST: d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
+    ASSET_INSTANCE_ID: 5a09def9-006c-40f6-a1d0-c1f892e134ec
+    ASSET_URI: https://predix-asset.run.aws-usw02-pr.ice.predix.io
+
+  services:
+  - predix_uaa_isk-dev
+  - predix_timeseries_bmsDev

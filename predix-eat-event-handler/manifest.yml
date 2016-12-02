@@ -1,0 +1,7 @@
+---
+applications:
+  - name: predix-bms-db-handler-dev
+    buildpack: java_buildpack
+    services: 
+      - predix_postgres_bmsDev
+    path: target/predix-bms-db-handler-0.0.1-SNAPSHOT.jar

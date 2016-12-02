@@ -1,0 +1,27 @@
+spring:
+  profiles: integration
+
+uaa:
+  clientId: predix_wts
+  clientSecret: IM_SO_SECRET
+  clientBase64Token: cHJlZGl4X3d0czpJTV9TT19TRUNSRVQ=
+  uri: https://6a52dbca-c0d8-444b-8d46-1b76052ef957.predix-uaa.run.aws-usw02-pr.ice.predix.io
+
+backend:
+  uri: https://predix-wts-backend-api-integration-test.run.aws-usw02-pr.ice.predix.io
+
+timeseries:
+  instanceId: acbb520e-91af-405d-8a5a-579f986b356c
+  origin: https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints
+  ingestUri: wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages
+  queryUri: https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints
+  updateTurbineInterval: 1000
+  generateDataInterval: 500
+  httpReadTimeout: 2000
+  httpConnTimeout: 2000
+  webSocketMaxIdleTimeout: 2000
+
+rabbitmq:
+  timeseriesQueueName: timeseriesQueue
+  incidentQueueName: incidentQueue
+  uri: amqp://873b7c3d-998a-46ff-a508-f01d72d59027:463ob9928g9blgt7gu48u9b588@10.72.6.45/98fa9e28-2b4c-42c1-884f-1882732d85f1

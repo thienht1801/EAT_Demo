@@ -1,0 +1,15 @@
+applications:
+  - name: predix-bms-gateway-dev1
+    buildpack: java_buildpack
+    memory: 1G
+    instances: '1'
+    path: target/predix-bms-gateway-0.0.1-SNAPSHOT.jar
+    services:
+      - predix_rabbitmq_bmsDev
+    env:
+      CLIENT_ID: predix_bms
+      CLIENT_SECRET: IM_SO_SECRET
+      CLIENT_BASE64_TOKEN: cHJlZGl4X2JtczpJTV9TT19TRUNSRVQ=
+      UAA_URI: >-
+        https://d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
+      UAA_INSTANCE_ID: d0919b4b-8e2b-4e07-bf22-2798603c6aad

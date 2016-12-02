@@ -3,16 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.predix.iot.bms</groupId>
-	<artifactId>predix-bms-temperature-datasimulator</artifactId>
+	<groupId>com.predix.iot.eat</groupId>
+	<artifactId>predix-eat-datasimulator</artifactId>
 	<packaging>jar</packaging>
 
-	<name>predix-bms-temperature-datasimulator</name>
-	<description>Timeseries feeder</description>
+	<name>predix-eat-datasimulator</name>
+	<description>Data feeder</description>
 
 	<parent>
 		<groupId>com.predix.iot</groupId>
-		<artifactId>predix-bms</artifactId>
+		<artifactId>predix-eat</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 

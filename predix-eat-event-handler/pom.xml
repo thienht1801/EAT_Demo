@@ -10,12 +10,6 @@
 	<name>predix-eat-event-handler</name>
 	<description>DB Handler</description>
 
-	<parent>
-		<groupId>com.predix.iot</groupId>
-		<artifactId>predix-eat</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -73,4 +67,5 @@
 		</plugins>
 	</build>
 
+	<version>1.0</version>
 </project>

@@ -9,11 +9,6 @@
 	<name>predix-eat-alert-detector</name>
 	<description>EAT Alert</description>
 
-	<parent>
-		<groupId>com.predix.iot</groupId>
-		<artifactId>predix-eat</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

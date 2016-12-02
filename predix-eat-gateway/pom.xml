@@ -10,12 +10,6 @@
 	<name>predix-eat-gateway</name>
 	<description>Predix IoT Gateway</description>
 
-	<parent>
-		<groupId>com.predix.iot</groupId>
-		<artifactId>predix-eat</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>

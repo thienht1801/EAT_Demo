@@ -5,16 +5,9 @@
 
 	<groupId>com.predix.iot.eat</groupId>
 	<artifactId>predix-eat-datasimulator</artifactId>
-	<packaging>jar</packaging>
 
 	<name>predix-eat-datasimulator</name>
 	<description>Data feeder</description>
-
-	<parent>
-		<groupId>com.predix.iot</groupId>
-		<artifactId>predix-eat</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
 
 	<dependencies>
 		<!-- Required to handle RestController and simple web -->
@@ -78,4 +71,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<version>1.0</version>
 </project>

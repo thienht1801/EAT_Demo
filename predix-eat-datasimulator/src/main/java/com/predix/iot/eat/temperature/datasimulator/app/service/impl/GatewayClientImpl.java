@@ -16,9 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.predix.iot.bms.common.configurations.UaaConfiguration;
-import com.predix.iot.bms.common.utils.UaaUtils;
-import com.predix.iot.eat.temperature.datasimulator.app.exceptions.TimeSeriesException;
+import com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration;
+import com.predix.iot.eat.temperature.datasimulator.utils.UaaUtils;
+import com.predix.iot.eat.temperature.datasimulator.app.exceptions.CustomException;
 import com.predix.iot.eat.temperature.datasimulator.app.service.GatewayClient;
 import com.predix.iot.eat.temperature.datasimulator.configuration.GatewayAPIConfiguration;
 
@@ -70,7 +70,7 @@ public class GatewayClientImpl implements GatewayClient {
 		}
 	}
 
-	private void sendDataToQueue(String message, String token) throws TimeSeriesException {
+	private void sendDataToQueue(String message, String token) throws CustomException {
 		try {
 			log.info("Send message: " + message);
 			target = client.target(gatewayAPIConfiguration.getUri()).path("queues");
@@ -80,15 +80,11 @@ public class GatewayClientImpl implements GatewayClient {
 			log.info("Raw Response : " + response);
 		} catch (Exception ex) {
 			log.error("Exception in sendTurbineData: ", ex);
-			throw new TimeSeriesException(ex);
+			throw new CustomException(ex);
 		}
 	}
 
-
-
-
-	@Override
-	public void postTemperatureDataToGateway(String message) throws TimeSeriesException {
+	public void postTemperatureDataToGateway(String message) throws CustomException {
 		// TODO Auto-generated method stub
 		checkTokenInCache();
 		sendDataToQueue(message,token);

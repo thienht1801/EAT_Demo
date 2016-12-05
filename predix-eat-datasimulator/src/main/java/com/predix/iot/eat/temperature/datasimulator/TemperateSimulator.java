@@ -1,8 +1,8 @@
 package com.predix.iot.eat.temperature.datasimulator;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.PostConstruct;
 
@@ -14,18 +14,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.ge.predix.timeseries.model.builder.IngestionRequestBuilder;
-import com.ge.predix.timeseries.model.builder.IngestionTag;
-import com.ge.predix.timeseries.model.builder.IngestionTag.Builder;
-import com.ge.predix.timeseries.model.datapoints.DataPoint;
-import com.ge.predix.timeseries.model.datapoints.Quality;
 import com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration;
-import com.predix.iot.eat.temperature.datasimulator.app.exceptions.TimeSeriesException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.predix.iot.eat.temperature.datasimulator.app.exceptions.CustomException;
 import com.predix.iot.eat.temperature.datasimulator.app.service.GatewayClient;
 import com.predix.iot.eat.temperature.datasimulator.timeseries.entity.BuildingEntity;
-import com.predix.iot.eat.temperature.datasimulator.utils.EnergyConsumptionGenerator;
-import com.predix.iot.eat.temperature.datasimulator.utils.IndoorTemperatureGenerator;
-import com.predix.iot.eat.temperature.datasimulator.utils.OutdoorTemperatureGenerator;
 import com.predix.iot.eat.temperature.datasimulator.utils.UaaUtils;
 
 @Component
@@ -40,7 +34,16 @@ public class TemperateSimulator {
 	UaaConfiguration uaaConfig;
 
 	private String token;
-
+	
+	private static Long maxBuildingId = 10L;
+	private static Double maxInDoorTemp = 100.0;
+	private static Double maxOutDoorTemp = 100.0;
+	private static Double maxEnergyConsume = 500.0;
+	private static Double minInDoorTemp = 50.0;
+	private static Double minOutDoorTemp = 50.0;
+	private static Double minEnergyConsume = 200.0;
+	
+	
 	@Scheduled(fixedDelayString = "${scheduler.time}")
 	public void feedData() {
 		logger.info("Start feeding temperature data to Timeseries");
@@ -50,51 +53,39 @@ public class TemperateSimulator {
 
 	@Async
 	protected void generateData() {
-
+		ObjectMapper mapper = new ObjectMapper();
 		BuildingEntity building = new BuildingEntity();
-		//add code to generate random data here
-		generateAndSendData(building);
-
-	}
-
-	private <T> void generateAndSendData(T asset) {
-		String payload = generateData(asset);
-		// send message to data gateway
+				
 		try {
-			client.postTemperatureDataToGateway(payload);
-		} catch (TimeSeriesException e) {
-			// TODO Auto-generated catch block
+			Long randomId = ThreadLocalRandom.current().nextLong(0, maxBuildingId);
+			Double randomInDoorTemp = ThreadLocalRandom.current().nextDouble(minInDoorTemp, maxInDoorTemp);
+			Double randomOutDoorTemp = ThreadLocalRandom.current().nextDouble(minOutDoorTemp, maxOutDoorTemp);
+			Double randomEnergyConsume = ThreadLocalRandom.current().nextDouble(minEnergyConsume, maxEnergyConsume);
+			
+			building.setId(randomId);
+			building.setInDoorTemp(randomInDoorTemp);
+			building.setOutDoorTemp(randomOutDoorTemp);
+			building.setEnergyConsume(randomEnergyConsume);
+			
+			sendData(mapper.writeValueAsString(building));
+		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			logger.error("Error in generateData:" + e);
 		}
+
 	}
 
-	private static <T> String generateData(T data) {
-		String payload = "";
-		Long timestamp = Instant.now().toEpochMilli();
-		IngestionRequestBuilder ingestionBuilder = IngestionRequestBuilder.createIngestionRequest()
-				.withMessageId("MESSAGE_@_" + timestamp)
-				.addIngestionTag(
-						decorateBuilder(data, IngestionTag.Builder.createIngestionTag().withTagName(OutdoorTemperatureGenerator.TAG))
-						.addDataPoints(Arrays.asList(new DataPoint(timestamp, OutdoorTemperatureGenerator.getNextValue(), Quality.GOOD)))
-						.build())
-				.addIngestionTag(
-						decorateBuilder(data, IngestionTag.Builder.createIngestionTag().withTagName(IndoorTemperatureGenerator.TAG))
-						.addDataPoints(Arrays.asList(new DataPoint(timestamp, IndoorTemperatureGenerator.getNextValue(), Quality.GOOD)))
-						.build())
-				.addIngestionTag(
-						decorateBuilder(data, IngestionTag.Builder.createIngestionTag().withTagName(EnergyConsumptionGenerator.TAG))
-						.addDataPoints(Arrays.asList(new DataPoint(timestamp, EnergyConsumptionGenerator.getNextValue(), Quality.GOOD)))
-						.build());
+	private <T> void sendData(String building) {
+		String payload = building;
+		// send message to data gateway
 		try {
-			payload = ingestionBuilder.build().get(0);
-			logger.info("Generate Message: " + payload);
-			return payload;
-		} catch (IOException e) {
-			logger.error("Error while building payload for ingestion ", e);
-			return null;
+			client.postTemperatureDataToGateway(payload);
+		} catch (CustomException e) {
+			e.printStackTrace();
+			logger.error("Error in sendData:" + e);
 		}
 	}
+
 
 	@PostConstruct
 	private void putTokenToCache() {
@@ -108,21 +99,4 @@ public class TemperateSimulator {
 		}
 	}
 
-	private static <T> Builder decorateBuilder(T data, Builder builder) {
-		BuildingEntity building=null;
-
-		if(data instanceof BuildingEntity){
-			building = (BuildingEntity)data;
-		}
-
-		if (building != null) {
-			return decorateBuildingPayload(building, builder);
-		}
-		
-		return builder;
-	}
-
-	private static Builder decorateBuildingPayload(BuildingEntity building, Builder builder) {
-		return builder.addAttribute("buildingId", building.getId() + "");
-	}
 }

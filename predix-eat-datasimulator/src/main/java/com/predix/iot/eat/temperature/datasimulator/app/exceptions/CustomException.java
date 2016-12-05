@@ -1,6 +1,6 @@
 package com.predix.iot.eat.temperature.datasimulator.app.exceptions;
 
-public class TimeSeriesException extends Exception{
+public class CustomException extends Exception{
 
 	/**
 	 *
@@ -10,16 +10,16 @@ public class TimeSeriesException extends Exception{
 	private String message;
 	private Throwable exception;
 
-	public TimeSeriesException() {
+	public CustomException() {
 		super();
 	}
-	public TimeSeriesException(String message) {
+	public CustomException(String message) {
 		super(message);
 	}
-	public TimeSeriesException(Throwable cause) {
+	public CustomException(Throwable cause) {
 		super(cause);
 	}
-	public TimeSeriesException(String message, Throwable cause) {
+	public CustomException(String message, Throwable cause) {
 		super(message, cause);
 	}
 	@Override
@@ -37,6 +37,6 @@ public class TimeSeriesException extends Exception{
 	}
 	@Override
 	public String toString() {
-		return "TimeSeriesException [message=" + message + ", exception=" + exception + "]";
+		return "Exception [message=" + message + ", exception=" + exception + "]";
 	}
 }

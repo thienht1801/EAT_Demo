@@ -147,5 +147,24 @@ public class UaaUtils {
 			return null;
 		}
 	}
-
+	/**
+	 * check the token is expired or not
+	 * @param token the token in cache
+	 * */
+	public static boolean isTokenExpired(String token) {
+		Long expiredTime = USERINFO_LOCAL_CACHE.get(token);
+		if(expiredTime == null || expiredTime.longValue() == 0) {
+			return true;
+		} 
+		boolean isExpired = System.currentTimeMillis() > expiredTime.longValue();
+		return isExpired;
+	}
+	
+	/**
+	 * remove token in local cache
+	 * @param token token to save
+	 * */
+	public static void removeTokenInCache(String token) {
+		USERINFO_LOCAL_CACHE.remove(token);
+	}
 }

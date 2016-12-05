@@ -1,0 +1,42 @@
+{
+  "groups": [
+    {
+      "name": "gatewayAPI",
+      "type": "com.predix.iot.eat.temperature.datasimulator.configuration.GatewayAPIConfiguration",
+      "sourceType": "com.predix.iot.eat.temperature.datasimulator.configuration.GatewayAPIConfiguration"
+    },
+    {
+      "name": "uaa",
+      "type": "com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration",
+      "sourceType": "com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "gatewayAPI.uri",
+      "type": "java.lang.String",
+      "sourceType": "com.predix.iot.eat.temperature.datasimulator.configuration.GatewayAPIConfiguration"
+    },
+    {
+      "name": "uaa.client-base64-token",
+      "type": "java.lang.String",
+      "sourceType": "com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration"
+    },
+    {
+      "name": "uaa.client-id",
+      "type": "java.lang.String",
+      "sourceType": "com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration"
+    },
+    {
+      "name": "uaa.client-secret",
+      "type": "java.lang.String",
+      "sourceType": "com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration"
+    },
+    {
+      "name": "uaa.uri",
+      "type": "java.lang.String",
+      "sourceType": "com.predix.iot.eat.temperature.datasimulator.configuration.UaaConfiguration"
+    }
+  ],
+  "hints": []
+}

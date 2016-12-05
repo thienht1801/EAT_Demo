@@ -20,11 +20,10 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import com.predix.iot.bms.common.dto.TimeTag;
-import com.predix.iot.bms.common.utils.JsonUtils;
-import com.predix.iot.bms.timeseries.configuration.DbHandlerConfiguration;
-import com.predix.iot.bms.timeseries.dto.Alert;
-import com.predix.iot.bms.timeseries.dto.TimeSeriesMessage;
+import com.predix.iot.eat.timeseries.util.JsonUtils;
+import com.predix.iot.eat.timeseries.configuration.EventHandlerConfiguration;
+import com.predix.iot.eat.timeseries.dto.Alert;
+import com.predix.iot.eat.timeseries.dto.BuildingEntity;
 
 /**
  * @author Tai Huynh
@@ -41,7 +40,7 @@ public class AlertDetector {
 	private HttpClient client = buildHttpClient();
 
 	@Autowired
-	DbHandlerConfiguration dbhandlerConfig;
+	EventHandlerConfiguration eventHandlerConfig;
 
 	@Autowired
 	private SimpMessagingTemplate simpleMessagingTemplate;
@@ -59,93 +58,19 @@ public class AlertDetector {
 			logger.warn("Message is null from queue: " + message);
 		} else {
 			logger.info("Queue Message: " + message);
-			List<TimeTag> allTimeTags = convertJsonToTimeTags(message);
-			if(allTimeTags == null || allTimeTags.size() < 1) {
-				logger.warn("Invalid data from queue: " + message);
-			} else {
-				for (TimeTag timeTag : allTimeTags) {
-					String tagName = timeTag.getName();
-					if (tagName != null) {
-						processTag(tagName, timeTag);
-					} else {
-						logger.warn("Cannot extract tag name from message:" +  message);
-					}
-				}
-			}
+			BuildingEntity messageObject = JsonUtils.fromJson(message, BuildingEntity.class);
+			processMessage(messageObject);	
 		}
 	}
 
-
-	/**
-	 * Convert Json string to  TimeTag Java object
-	 *
-	 * @param jsonStr
-	 * @return TimeTag
-	 */
-	private List<TimeTag> convertJsonToTimeTags(String jsonStr) {
-		try {
-			TimeSeriesMessage timeSeries = JsonUtils.MAPPER.readValue(jsonStr, TimeSeriesMessage.class);
-			if(timeSeries == null)
-				return null;
-			List<TimeTag> tags = timeSeries.getBody();
-			return tags;
-		} catch (Exception e) {
-			logger.warn("Error to convert Json to TimeTag", e);
-			return null;
-		}
-	}
-
-	/**
-	 * @author Tai Huynh
-	 * call to Asset to get info then
-	 * @param turbineUri also the same tagName
-	 * @param tag {@link TimeTag}
-	 * */
-	private void processTag(String messageType, TimeTag tag) {
+	private void processMessage(BuildingEntity message) {
 		Long buildingId = null;
-		Long floorId = null;
-		Long roomId = null;
-		Long equipmentId = null;
-
-		Map<String, String> attributes = tag.getAttributes();
-		if(null != attributes.get("buildingId") && !"".equals(attributes.get("buildingId"))){
-			buildingId = Long.valueOf(attributes.get("buildingId"));
-		}
-		if(null != attributes.get("floorId") && !"".equals(attributes.get("floorId"))){
-			floorId = Long.valueOf(attributes.get("floorId"));
-		}
-		if(null != attributes.get("roomId") && !"".equals(attributes.get("roomId"))){
-			roomId = Long.valueOf(attributes.get("roomId"));
-		}
-		if(null != attributes.get("equipmentId") && !"".equals(attributes.get("equipmentId"))){
-			equipmentId = Long.valueOf(attributes.get("equipmentId"));
-		}
-
-		Object[][] datapoints = tag.getDatapoints();
-		for (Object[] datapoint : datapoints) {
-			String messageTS = datapoint[0].toString();
-			double messageValue = Double.parseDouble((datapoint[1].toString()));
-			Integer messageQlty = Integer.parseInt(datapoint[2].toString());
 
 			Alert alert = new Alert();
-			alert.setMessageType(messageType);
-			alert.setMessageTs(new Date(Long.valueOf(messageTS)));
-			alert.setMessageValue(messageValue);
-			alert.setMessageQlty(messageQlty);
-			alert.setBuildingId(buildingId);
-			alert.setFloorId(floorId);
-			alert.setRoomId(roomId);
-			alert.setEquipmentId(equipmentId);
 
-			if("INDOOR_TEMPERATURE".equalsIgnoreCase(messageType)){
+/*			if("INDOOR_TEMPERATURE".equalsIgnoreCase(messageType)){
 				if(messageValue < 65 || messageValue > 75){
 					saveAlertMessage(alert);
-					forwardMessage(alert);
-				}
-			}else if("CO2_LEVEL".equalsIgnoreCase(messageType)) {
-				if(messageValue < 300 || messageValue > 650){
-					saveAlertMessage(alert);
-					forwardMessage(alert);
 				}
 			}else if("ENERGY_CONSUMPTION".equalsIgnoreCase(messageType)){
 				if(null == lastECpoint){
@@ -156,11 +81,9 @@ public class AlertDetector {
 					logger.info("Current EC point: " + messageValue);
 					if(messageValue > (lastECpoint + lastECpoint*0.2)){
 						saveAlertMessage(alert);
-						forwardMessage(alert);
 					}
 				}
-			}
-		}
+			}*/
 	}
 
 	/**
@@ -168,7 +91,7 @@ public class AlertDetector {
 	 * @param message
 	 */
 	private synchronized void saveAlertMessage(Alert message) {
-		String dbHandlerEndpoint = dbhandlerConfig.getRuntimeUri() + API;
+		String dbHandlerEndpoint = eventHandlerConfig.getRuntimeUri() + API;
 		String alertMessage;
 		try {
 			Alert[] alert = new Alert[1];
@@ -186,8 +109,6 @@ public class AlertDetector {
 				request.setHeader("Content-Type", "application/json");
 				StringEntity input = new StringEntity(alertMessage);
 				input.setContentType("application/json");				
-				//MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-				//builder.addPart("alerts", new StringBody(alertMessage, ContentType.APPLICATION_JSON));
 				request.setEntity(input);
 
 				HttpResponse response = client.execute(request);
@@ -205,22 +126,5 @@ public class AlertDetector {
 
 	private synchronized HttpClient buildHttpClient() {
 		return HttpClientBuilder.create().build();
-	}
-
-	/**
-	 * forward message to UI through WebSocket
-	 * @param message
-	 */
-	private synchronized void forwardMessage(Alert message) {		
-		String alertMessage;
-		try {
-			alertMessage = JsonUtils.MAPPER.writeValueAsString(message);
-			logger.debug("Alert Message: " + alertMessage);
-			
-			simpleMessagingTemplate.convertAndSend("/topic/alerts", alertMessage);
-		} catch (Exception e) {
-			logger.error("Error", e);
-		}
-
 	}
 }

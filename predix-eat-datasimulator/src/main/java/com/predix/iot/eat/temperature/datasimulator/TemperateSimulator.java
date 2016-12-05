@@ -1,7 +1,5 @@
 package com.predix.iot.eat.temperature.datasimulator;
 
-import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.PostConstruct;
@@ -46,7 +44,7 @@ public class TemperateSimulator {
 	
 	@Scheduled(fixedDelayString = "${scheduler.time}")
 	public void feedData() {
-		logger.info("Start feeding temperature data to Timeseries");
+		logger.info("Start feeding temperature data to gateway");
 
 		generateData();
 	}
@@ -63,11 +61,12 @@ public class TemperateSimulator {
 			Double randomEnergyConsume = ThreadLocalRandom.current().nextDouble(minEnergyConsume, maxEnergyConsume);
 			
 			building.setId(randomId);
-			building.setInDoorTemp(randomInDoorTemp);
-			building.setOutDoorTemp(randomOutDoorTemp);
-			building.setEnergyConsume(randomEnergyConsume);
+			building.setInDoorTemp( Math.round( randomInDoorTemp * 100.0 ) / 100.0);
+			building.setOutDoorTemp(Math.round( randomOutDoorTemp * 100.0 ) / 100.0);
+			building.setEnergyConsume(Math.round( randomEnergyConsume * 100.0 ) / 100.0);
 			
-			sendData(mapper.writeValueAsString(building));
+			String payload = mapper.writeValueAsString(building);
+			sendData(payload);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			logger.error("Error in generateData:" + e);

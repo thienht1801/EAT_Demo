@@ -7,10 +7,10 @@ spring:
   profiles: dev
 
 uaa:
-  clientId: predix_client
-  clientSecret: IM_SO_SECRET
-  clientBase64Token: cHJlZGl4X2NsaWVudDpJTV9TT19TRUNSRVQ=
-  uri: https://d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
+  clientId: eric_client
+  clientSecret: eric_secret
+  clientBase64Token: ZXJpY19jbGllbnQ6ZXJpY19zZWNyZXQ=
+  uri: https://d7f73e42-13aa-4d3c-ac07-91adad9a93b5.predix-uaa.run.aws-usw02-pr.ice.predix.io
 
 gatewayAPI:
   uri: http://localhost:9091
@@ -18,15 +18,10 @@ gatewayAPI:
 scheduler:
   time: 1000
 
-asset:
-  instanceId: af0fdf4e-0d14-4927-9570-550098455026
-  uri: https://predix-asset.run.aws-usw02-pr.ice.predix.io
-
 predix:
   oauth:
     grantType: client_credentials
-    restHost: d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
-    clientId: predix_client:IM_SO_SECRET
+    clientId: eric_client:eric_secret
   websocket:
     pool:
       maxIdle: 5
@@ -52,7 +47,6 @@ scheduler:
 predix:
   oauth:
     grantType: client_credentials
-    restHost: ${REST_HOST}
     clientId: ${CLIENT_ID}
   websocket:
     pool:

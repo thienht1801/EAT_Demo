@@ -79,7 +79,7 @@ public class GatewayClientImpl implements GatewayClient {
 					.post(Entity.entity(message, MediaType.APPLICATION_JSON_VALUE));
 			log.info("Raw Response : " + response);
 		} catch (Exception ex) {
-			log.error("Exception in sendTurbineData: ", ex);
+			log.error("Exception in sendDataToQueue: ", ex);
 			throw new CustomException(ex);
 		}
 	}

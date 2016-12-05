@@ -1,15 +1,15 @@
 applications:
-  - name: predix-bms-gateway-dev1
-    buildpack: java_buildpack
-    memory: 1G
+  - name: predix-eat-gateway-dev
+    memory: 512M
     instances: '1'
-    path: target/predix-bms-gateway-0.0.1-SNAPSHOT.jar
+    path: target/predix-eat-gateway-1.0.jar
     services:
-      - predix_rabbitmq_bmsDev
+      - eric-rabbitmq
+      - eric-uaa-service
     env:
-      CLIENT_ID: predix_bms
-      CLIENT_SECRET: IM_SO_SECRET
-      CLIENT_BASE64_TOKEN: cHJlZGl4X2JtczpJTV9TT19TRUNSRVQ=
+      CLIENT_ID: eric_client
+      CLIENT_SECRET: eric_secret
+      CLIENT_BASE64_TOKEN: ZXJpY19jbGllbnQ6ZXJpY19zZWNyZXQ=
       UAA_URI: >-
-        https://d0919b4b-8e2b-4e07-bf22-2798603c6aad.predix-uaa.run.aws-usw02-pr.ice.predix.io
-      UAA_INSTANCE_ID: d0919b4b-8e2b-4e07-bf22-2798603c6aad
+        https://d7f73e42-13aa-4d3c-ac07-91adad9a93b5.predix-uaa.run.aws-usw02-pr.ice.predix.io
+      UAA_INSTANCE_ID: d7f73e42-13aa-4d3c-ac07-91adad9a93b5

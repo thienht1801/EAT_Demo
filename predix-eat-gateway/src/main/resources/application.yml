@@ -9,19 +9,15 @@ server:
   port: 9091
 
 uaa:
-  clientBase64Token: cHJlZGl4X3d0czpJTV9TT19TRUNSRVQ=
-  uri: https://09ab1130-cb4c-4081-a213-5f7aa45fd591.predix-uaa.run.aws-usw02-pr.ice.predix.io
+  clientBase64Token: ZXJpY19jbGllbnQ6ZXJpY19zZWNyZXQ=
+  uri: https://d7f73e42-13aa-4d3c-ac07-91adad9a93b5.predix-uaa.run.aws-usw02-pr.ice.predix.io
 
 rabbitmq:
-  timeseriesQueueName: timeseriesQueue
-  incidentQueueName: incidentQueue
-  timeseriesIncidentQueueName: timeseriesIncidentQueue
-  timeseriesUiQueueName: timeseriesUiQueue
+  tempQueueName: tempQueue
   uri: amqp://localhost
 ---
 spring:
   profiles: cloud
-
 
 uaa:
   clientId: ${CLIENT_ID}
@@ -30,26 +26,4 @@ uaa:
   uri: ${UAA_URI}
 
 rabbitmq:
-  timeseriesQueueName: temperatureQueue
-  incidentQueueName: incidentQueue
-  timeseriesIncidentQueueName: timeseriesIncidentQueue
-  timeseriesUiQueueName: timeseriesUiQueue
----
-spring:
-  profiles: integration
-
-
-uaa:
-  clientId: predix_client
-  clientSecret: IM_SO_SECRET
-  clientBase64Token: cHJlZGl4X2NsaWVudDpJTV9TT19TRUNSRVQ=
-  uri: https://40952729-c831-45c6-b834-4f2f23021339.predix-uaa.run.aws-usw02-pr.ice.predix.io
-
-
-gatewayAPI:
-  gatewayUri: https://predix-wts-gateway-development.run.aws-usw02-pr.ice.predix.io
-  assetUri: https://predix-asset.run.aws-usw02-pr.ice.predix.io
-  assetInstanceId: 7caf09cb-6a62-40f8-b54e-bc32d8f292fa
-
-backend:
-  uri: https://predix-wts-db-handler-development.run.aws-usw02-pr.ice.predix.io
+  tempQueueName: tempQueue

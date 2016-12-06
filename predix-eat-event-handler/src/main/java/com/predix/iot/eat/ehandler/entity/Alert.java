@@ -1,14 +1,14 @@
 /**
  * 
  */
-package com.predix.iot.eat.timeseries.dto;
+package com.predix.iot.eat.ehandler.entity;
 
 public class Alert{
 	
 	String messageType;
 	double messageValue;
 	Long buildingId;
-	
+
 	public Alert(){
 		
 	}

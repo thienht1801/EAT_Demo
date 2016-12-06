@@ -1,10 +1,6 @@
 package com.predix.iot.eat.router.app;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-
+import javax.annotation.PostConstruct;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,15 +8,17 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import com.predix.iot.eat.timeseries.util.JsonUtils;
+import com.predix.iot.eat.timeseries.configuration.UaaConfiguration;
+import com.predix.iot.eat.timeseries.util.UaaUtils;
 import com.predix.iot.eat.timeseries.configuration.EventHandlerConfiguration;
 import com.predix.iot.eat.timeseries.dto.Alert;
 import com.predix.iot.eat.timeseries.dto.BuildingEntity;
@@ -36,23 +34,18 @@ public class AlertDetector {
 
 	private static final Logger logger = LoggerFactory.getLogger(AlertDetector.class);
 	private final String API = "/alerts/batch";
-	private static Double lastECpoint = null;
+	
 	private HttpClient client = buildHttpClient();
 
 	@Autowired
 	EventHandlerConfiguration eventHandlerConfig;
 
 	@Autowired
-	private SimpMessagingTemplate simpleMessagingTemplate;
+	UaaConfiguration uaaConfig;
+	
+	private String token;
 
-
-	/**
-	 * @author Tai Huynh:
-	 * Consuming message from timeseriesIncidentQueue
-	 * Check and forward to incident queue
-	 * @param message
-	 */
-	@RabbitListener(queues = "alertQueue")
+	@RabbitListener(queues = "tempQueue")
 	public void onMessage(@Payload String message) throws InterruptedException {
 		if(message == null) {
 			logger.warn("Message is null from queue: " + message);
@@ -64,34 +57,48 @@ public class AlertDetector {
 	}
 
 	private void processMessage(BuildingEntity message) {
-		Long buildingId = null;
+		Alert alert = null;
+		Long buildingId = message.getId();
+		int indoorTempCheck = Double.compare(message.getInDoorTemp(), 95.0);
+		int outdoorTempCheck = Double.compare(message.getOutDoorTemp(), 95.0);
+		int energyConsumeCheck = Double.compare(message.getEnergyConsume(), 450.0);
+		
+		if(indoorTempCheck > 0){
+			alert = new Alert();
+			alert.setBuildingId(buildingId);
+			alert.setMessageType("INDOOR_TEMP_ALERT");
+			alert.setMessageValue(message.getInDoorTemp());
+			
+			saveAlertMessage(alert);
+		}
+		
+		if(outdoorTempCheck > 0){
+			alert = new Alert();
+			alert.setBuildingId(buildingId);
+			alert.setMessageType("OUTDOOR_TEMP_ALERT");
+			alert.setMessageValue(message.getOutDoorTemp());
+			
+			saveAlertMessage(alert);			
+		}
+		
+		if(energyConsumeCheck > 0){
+			alert = new Alert();
+			alert.setBuildingId(buildingId);
+			alert.setMessageType("ENERGY_CONSUME_ALERT");
+			alert.setMessageValue(message.getEnergyConsume());
+			
+			saveAlertMessage(alert);			
+		}
 
-			Alert alert = new Alert();
-
-/*			if("INDOOR_TEMPERATURE".equalsIgnoreCase(messageType)){
-				if(messageValue < 65 || messageValue > 75){
-					saveAlertMessage(alert);
-				}
-			}else if("ENERGY_CONSUMPTION".equalsIgnoreCase(messageType)){
-				if(null == lastECpoint){
-					logger.info("Init last EC point: " + messageValue);
-					lastECpoint = messageValue;
-				}else{
-					logger.info("Last EC point: " + lastECpoint);
-					logger.info("Current EC point: " + messageValue);
-					if(messageValue > (lastECpoint + lastECpoint*0.2)){
-						saveAlertMessage(alert);
-					}
-				}
-			}*/
+		checkTokenInCache();
 	}
 
 	/**
-	 * forward message to db handler
+	 * forward message to event handler
 	 * @param message
 	 */
 	private synchronized void saveAlertMessage(Alert message) {
-		String dbHandlerEndpoint = eventHandlerConfig.getRuntimeUri() + API;
+		String eventHandlerEndpoint = eventHandlerConfig.getRuntimeUri() + API;
 		String alertMessage;
 		try {
 			Alert[] alert = new Alert[1];
@@ -101,12 +108,18 @@ public class AlertDetector {
 
 			if (alertMessage != null) {
 				logger.debug("Alert Message: " + alertMessage);
-				HttpPost request = new HttpPost(dbHandlerEndpoint);
+				HttpPost request = new HttpPost(eventHandlerEndpoint);
 
 				if (logger.isInfoEnabled()) {
-					logger.info("DB Handler Endpoint: " + dbHandlerEndpoint + ", sending input: " + alertMessage);
+					logger.info("Event Handler Endpoint: " + eventHandlerEndpoint + ", sending input: " + alertMessage);
 				}
+				
 				request.setHeader("Content-Type", "application/json");
+				if(null == token || "".equalsIgnoreCase(token)){
+					logger.error("Error", "TOKEN IS EMPTY");
+				}
+				request.setHeader("Authorization", "Bearer " + token);
+				
 				StringEntity input = new StringEntity(alertMessage);
 				input.setContentType("application/json");				
 				request.setEntity(input);
@@ -126,5 +139,29 @@ public class AlertDetector {
 
 	private synchronized HttpClient buildHttpClient() {
 		return HttpClientBuilder.create().build();
+	}
+	
+	@PostConstruct
+	private void putTokenToCache() {
+		try {
+			token = UaaUtils.getAdminAccessToken(uaaConfig);
+			JSONObject jsonObject = UaaUtils.getAccountInfoInUaa(token, uaaConfig);
+			Long expiredTime = (jsonObject.getLong("exp") * 1000);
+			UaaUtils.putTokenToCache(token, expiredTime);
+		} catch (Exception ex) {
+			logger.warn("Can't get the token in uaa", ex);
+		}
+	}
+	
+	private void checkTokenInCache(){
+		if(token != null) {
+			if(UaaUtils.isTokenExpired(token)) {
+				UaaUtils.removeTokenInCache(token);
+				putTokenToCache();
+				logger.info("********** TOKEN IS EXPIRED **********");
+			}
+		} else {
+			putTokenToCache();
+		}
 	}
 }

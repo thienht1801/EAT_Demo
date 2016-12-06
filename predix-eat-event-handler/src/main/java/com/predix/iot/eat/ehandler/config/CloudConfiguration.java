@@ -1,4 +1,4 @@
-package com.predix.iot.bms.dbhandler.config;
+package com.predix.iot.eat.ehandler.config;
 
 import javax.sql.DataSource;
 

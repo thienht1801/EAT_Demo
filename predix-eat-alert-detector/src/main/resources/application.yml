@@ -7,31 +7,14 @@ uaa:
   uri: https://41fbe4c3-c2c7-4ac9-b724-6705cdfdd51a.predix-uaa.run.aws-usw02-pr.ice.predix.io
  
 rabbitmq:
-  alertQueueName: alertQueue
+  alertQueueName: tempQueue
   uri: amqp://localhost 
 
 util:
   uiTimeOut: 500
   
-db-handler:
-  runtimeUri: https://predix-bms-db-handler-bms-dev.run.aws-usw02-pr.ice.predix.io
----
-spring:
-  profiles: unit-test
-  
-uaa:
-  clientBase64Token: cHJlZGl4X3d0czpJTV9TT19TRUNSRVQ=
-  uri: http://localhost:8888
- 
-rabbitmq:
-  alertQueueName: alertQueue
-  uri: amqp://localhost    
-    
-util:
-  uiTimeOut: 500
-
-db-handler:
-  runtimeUri: https://predix-bms-db-handler-bms-dev.run.aws-usw02-pr.ice.predix.io   
+event-handler:
+  runtimeUri: https://predix-bms-db-handler-bms-dev.run.aws-usw02-pr.ice.predix.io  
 ---
 spring:
   profiles: cloud
@@ -46,11 +29,11 @@ uaa:
   uri: ${UAA_URI}
    
 rabbitmq:
-  alertQueueName: alertQueue
+  alertQueueName: tempQueue
   
 util:
   uiTimeOut: 2000
   
-db-handler:
-  runtimeUri: ${DB_HANDLER_URI}
+event-handler:
+  runtimeUri: ${EVENT_HANDLER_URI}
   

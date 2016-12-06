@@ -1,7 +1,21 @@
 ---
 applications:
-  - name: predix-bms-db-handler-dev
-    buildpack: java_buildpack
-    services: 
-      - predix_postgres_bmsDev
-    path: target/predix-bms-db-handler-0.0.1-SNAPSHOT.jar
+- name: predix-eat-event_handler-dev
+  buildpack: java_buildpack
+  memory: 512M
+  disk_quota: 1G
+  domain: run.aws-usw02-pr.ice.predix.io
+  path: target/predix-bms-alert-detector-0.0.1-SNAPSHOT.jar
+  services:
+    - eric-audit_trail
+    - eric-uaa-service
+  env:
+    CLIENT_ID: eric_client
+    CLIENT_SECRET: eric_secret
+    CLIENT_BASE64_TOKEN: ZXJpY19jbGllbnQ6ZXJpY19zZWNyZXQ=
+    UAA_URI: >-
+      https://d7f73e42-13aa-4d3c-ac07-91adad9a93b5.predix-uaa.run.aws-usw02-pr.ice.predix.io
+    UAA_INSTANCE_ID: d7f73e42-13aa-4d3c-ac07-91adad9a93b5
+    AUDIT_TRAIL_URI: >-
+      https://predix-bms-db-handler-bms-dev.run.aws-usw02-pr.ice.predix.io
+    TENANT_UUID: bd377e49-b7a9-494e-b195-06db45e9970e

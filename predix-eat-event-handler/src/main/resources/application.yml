@@ -1,30 +1,35 @@
 ---
 spring:
   profiles: dev
-      
-backend:
-  uri: ${vcap.application.${application_uris:0}:}
   
+uaa:
+  clientBase64Token: cHJlZGl4X2NsaWVudDpJTV9TT19TRUNSRVQ=
+  uri: https://41fbe4c3-c2c7-4ac9-b724-6705cdfdd51a.predix-uaa.run.aws-usw02-pr.ice.predix.io
+ 
+rabbitmq:
+  alertQueueName: tempQueue
+  uri: amqp://localhost 
+
+util:
+  uiTimeOut: 500
+  
+audit-trail:
+  runtimeUri: https://predix-bms-db-handler-bms-dev.run.aws-usw02-pr.ice.predix.io
+  tenantUuid: bd377e49-b7a9-494e-b195-06db45e9970e  
 ---
 spring:
   profiles: cloud
-
-  jpa: 
-    hibernate: 
-      ddl-auto: none
-      
-  datasource:
-    test-on-borrow: true
-      
----
-spring:
-  profiles: integration
+    
+uaa:
+  clientId: ${CLIENT_ID}
+  clientSecret: ${IM_SO_SECRET}
+  clientBase64Token: ${CLIENT_BASE64_TOKEN}
+  uri: ${UAA_URI}
+     
+util:
+  uiTimeOut: 2000
   
-  jpa: 
-    hibernate: 
-      ddl-auto: update
-  
-backend:
-  uri: https://predix-bms-db-handler.run.aws-usw02-pr.ice.predix.io
-
+audit-trail:
+  runtimeUri: ${AUDIT_TRAIL_URI}
+  tenantUuid: ${TENANT_UUID}
   

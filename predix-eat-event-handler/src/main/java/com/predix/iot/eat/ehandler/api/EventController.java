@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.predix.iot.eat.ehandler.config.AuditTrailConfiguration;
 import com.predix.iot.eat.ehandler.config.UaaConfiguration;
 import com.predix.iot.eat.ehandler.entity.Alert;
@@ -62,14 +63,20 @@ public class EventController{
 			event.setContext("Alert");
 			event.setTag(alert.getMessageType());
 			event.setClassification(String.valueOf(alert.getBuildingId()));
-			event.setData(alert);
-			
+			String alertString = "";
+			try {
+				alertString = JsonUtils.MAPPER.writeValueAsString(alert);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+				log.error("Error", e);
+			}
+			event.setData(alertString);			
 			saveEvent(event);
 		}		
 	}
 
 	private synchronized void saveEvent(EventEntity event) {
-		String eventHandlerEndpoint = eventHandlerConfig.getRuntimeUri() + "/tenants/" + 
+		String eventHandlerEndpoint = eventHandlerConfig.getRuntimeUri() + "/" + eventHandlerConfig.getVersion() + "/tenants/" + 
 				eventHandlerConfig.getTenantUuid() + "/events";
 		String eventMessage;
 		try {

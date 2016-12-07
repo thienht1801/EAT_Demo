@@ -35,4 +35,4 @@ util:
 audit-trail:
   runtimeUri: ${AUDIT_TRAIL_URI}
   tenantUuid: ${TENANT_UUID}
-  
+  version: ${EAT_VERSION}

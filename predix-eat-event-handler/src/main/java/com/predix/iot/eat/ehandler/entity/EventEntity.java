@@ -5,14 +5,14 @@ public class EventEntity {
 	private String context;
 	private String tag;
 	private String classification;
-	private Alert data;
+	private String data;
 	
 	
 	public EventEntity(){
 		
 	}
 	
-	public EventEntity(String context, String tag, String classification, Alert data) {
+	public EventEntity(String context, String tag, String classification, String data) {
 		super();
 		this.context = context;
 		this.tag = tag;
@@ -38,13 +38,11 @@ public class EventEntity {
 	public void setClassification(String classification) {
 		this.classification = classification;
 	}
-	public Alert getData() {
+	public String getData() {
 		return data;
 	}
-	public void setData(Alert data) {
+	public void setData(String data) {
 		this.data = data;
 	}
-	
-	
-	
+		
 }

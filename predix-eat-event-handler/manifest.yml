@@ -19,3 +19,4 @@ applications:
     AUDIT_TRAIL_URI: >-
       https://event-audit-trail.run.aws-usw02-pr.ice.predix.io
     TENANT_UUID: 8a98aab9-000f-4d81-b2bf-23c1bc1f086c
+    EAT_VERSION: v1

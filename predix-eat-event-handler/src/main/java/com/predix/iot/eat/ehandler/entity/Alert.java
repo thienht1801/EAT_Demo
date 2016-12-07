@@ -38,5 +38,4 @@ public class Alert{
 	public void setBuildingId(Long buildingId) {
 		this.buildingId = buildingId;
 	}
-	
 }

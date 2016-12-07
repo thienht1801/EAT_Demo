@@ -11,6 +11,7 @@ public class AuditTrailConfiguration {
 
 	private String runtimeUri;
 	private String tenantUuid;
+	private String version;
 	
 	public String getRuntimeUri() {
 		return runtimeUri;
@@ -27,5 +28,14 @@ public class AuditTrailConfiguration {
 	public void setTenantUuid(String tenantUuid) {
 		this.tenantUuid = tenantUuid;
 	}
-			
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	
 }

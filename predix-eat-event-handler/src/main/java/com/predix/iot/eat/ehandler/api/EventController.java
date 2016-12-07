@@ -1,6 +1,5 @@
 package com.predix.iot.eat.ehandler.api;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +24,6 @@ import com.predix.iot.eat.ehandler.config.AuditTrailConfiguration;
 import com.predix.iot.eat.ehandler.config.UaaConfiguration;
 import com.predix.iot.eat.ehandler.entity.Alert;
 import com.predix.iot.eat.ehandler.entity.EventEntity;
-import com.predix.iot.eat.ehandler.util.EventHandlerUtils;
 import com.predix.iot.eat.ehandler.util.JsonUtils;
 import com.predix.iot.eat.ehandler.util.UaaUtils;
 
@@ -71,7 +69,7 @@ public class EventController{
 	}
 
 	private synchronized void saveEvent(EventEntity event) {
-		String eventHandlerEndpoint = eventHandlerConfig.getRuntimeUri() + "tenants/" + 
+		String eventHandlerEndpoint = eventHandlerConfig.getRuntimeUri() + "/tenants/" + 
 				eventHandlerConfig.getTenantUuid() + "/events";
 		String eventMessage;
 		try {

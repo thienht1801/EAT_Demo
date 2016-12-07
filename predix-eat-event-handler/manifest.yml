@@ -5,9 +5,9 @@ applications:
   memory: 512M
   disk_quota: 1G
   domain: run.aws-usw02-pr.ice.predix.io
-  path: target/predix-bms-alert-detector-0.0.1-SNAPSHOT.jar
+  path: target/predix-eat-event-handler-1.0.jar
   services:
-    - eric-audit_trail
+    - eric-audit-trail
     - eric-uaa-service
   env:
     CLIENT_ID: eric_client
@@ -17,5 +17,5 @@ applications:
       https://d7f73e42-13aa-4d3c-ac07-91adad9a93b5.predix-uaa.run.aws-usw02-pr.ice.predix.io
     UAA_INSTANCE_ID: d7f73e42-13aa-4d3c-ac07-91adad9a93b5
     AUDIT_TRAIL_URI: >-
-      https://predix-bms-db-handler-bms-dev.run.aws-usw02-pr.ice.predix.io
-    TENANT_UUID: bd377e49-b7a9-494e-b195-06db45e9970e
+      https://event-audit-trail.run.aws-usw02-pr.ice.predix.io
+    TENANT_UUID: 8a98aab9-000f-4d81-b2bf-23c1bc1f086c
